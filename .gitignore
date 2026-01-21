@@ -1,0 +1,68 @@
+# ============================================
+# Tripay Ocestra - Orchestration Repository
+# ============================================
+# This .gitignore is for the orchestration layer only.
+# Individual apps have their own repositories.
+
+# ============================================
+# Application Directories (Have Own Repos)
+# ============================================
+# Exclude all application folders - they have their own git repos
+/dashboard.tripay.co.id/
+/trihariyanto.com/
+/tripay-payment/
+
+# ============================================
+# Environment & Secrets
+# ============================================
+# Never commit sensitive data
+.env
+.env.*
+!.env.example
+
+# ============================================
+# Docker & Runtime
+# ============================================
+# Docker volumes and runtime data
+.docker/mysql/
+.docker/redis/
+.docker/caddy/
+*.log
+
+# Docker Compose overrides (if any)
+docker-compose.override.yml
+
+# ============================================
+# IDE & Editor
+# ============================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ============================================
+# Temporary Files
+# ============================================
+tmp/
+temp/
+*.tmp
+
+# ============================================
+# OS Generated Files
+# ============================================
+Thumbs.db
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ============================================
+# What SHOULD be committed:
+# ============================================
+# ✅ docker-compose.yml
+# ✅ Caddyfile
+# ✅ .docker/ (configuration files only)
+# ✅ init.sh or setup scripts
+# ✅ README.md
+# ✅ .env.example (template without secrets)

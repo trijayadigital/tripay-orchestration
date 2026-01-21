@@ -1,0 +1,31 @@
+{
+    admin off
+}
+
+http://dashboard.tripay.localhost, http://trihariyanto.localhost, http://tripay.localhost {
+
+    @dashboard host dashboard.tripay.localhost
+    handle @dashboard {
+        reverse_proxy dashboard:3000
+    }
+
+    @trihariyanto host trihariyanto.localhost
+    handle @trihariyanto {
+        reverse_proxy trihariyanto:8000 {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    @tripay host tripay.localhost
+    handle @tripay {
+        reverse_proxy tripay-payment:8000 {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+}

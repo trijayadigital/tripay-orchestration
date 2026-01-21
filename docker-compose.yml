@@ -1,0 +1,102 @@
+services:
+  # Redis for tripay-payment
+  redis:
+    image: redis:alpine
+    container_name: tripay-redis
+    volumes:
+      - redis_data:/data
+    networks:
+      - tripay-network
+
+  # dashboard.tripay.co.id (Nuxt JS)
+  dashboard:
+    image: node:20-alpine
+    container_name: tripay-dashboard
+    working_dir: /app
+    volumes:
+      - ./dashboard.tripay.co.id:/app
+    environment:
+      - HOST=0.0.0.0
+      - PORT=3000
+      - NODE_ENV=development
+      - NUXT_DEV_SERVER_HTTPS=false
+    ports:
+      - "3000:3000"
+    command: sh -c "npm install -g pnpm && pnpm install && pnpm dev"
+    networks:
+      - tripay-network
+
+  # trihariyanto.com (PHP 8.2 + Laravel + Inertia)
+  trihariyanto:
+    build:
+      context: .
+      dockerfile: .docker/php82/Dockerfile
+    container_name: tripay-trihariyanto
+    working_dir: /var/www/html
+    volumes:
+      - ./trihariyanto.com:/var/www/html
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - DB_HOST=host.docker.internal
+      - REDIS_HOST=redis
+      - SESSION_DOMAIN=.trihariyanto.localhost
+      - SESSION_DRIVER=file
+      - SESSION_SECURE_COOKIE=true
+      - SESSION_SAME_SITE=lax
+    ports:
+      - "8000:8000"
+      - "5173:5173"
+    # Added npm run build as a fallback for manifest, then serve.
+    command: sh -c "composer install && php artisan ziggy:generate && npm install && rm -f public/hot && npm run build && php artisan serve --host=0.0.0.0 --port=8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - tripay-network
+
+  # tripay-payment (PHP 8.2 + Laravel + Vue)
+  tripay-payment:
+    build:
+      context: .
+      dockerfile: .docker/php81/Dockerfile
+    container_name: tripay-payment
+    working_dir: /var/www/html
+    volumes:
+      - ./tripay-payment:/var/www/html
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - DB_HOST=host.docker.internal
+      - REDIS_HOST=redis
+    ports:
+      - "8001:8000"
+    # Using npm install -g yarn to ensure availability, then build assets.
+    # Using npx concurrently to run both artisan serve and npm watch
+    command: sh -c "composer install && npm install -g yarn  && yarn install && npx concurrently \"php artisan serve --host=0.0.0.0 --port=8000\" \"npm run watch\""
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - tripay-network
+
+  # Caddy Reverse Proxy for .localhost domains
+  proxy:
+    image: caddy:latest
+    container_name: tripay-proxy
+    ports:
+      - "80:80"
+      - "8443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+    depends_on:
+      - dashboard
+      - trihariyanto
+      - tripay-payment
+    networks:
+      - tripay-network
+
+networks:
+  tripay-network:
+    driver: bridge
+
+volumes:
+  redis_data:
