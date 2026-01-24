@@ -78,6 +78,30 @@ services:
     networks:
       - tripay-network
 
+  # tripay-ppob (PHP 8.1 + Laravel)
+  tripay-ppob:
+    build:
+      context: .
+      dockerfile: .docker/php81/Dockerfile
+    container_name: tripay-ppob
+    working_dir: /var/www/html
+    volumes:
+      - ./tripay-ppob:/var/www/html
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - DB_HOST=host.docker.internal
+      - REDIS_HOST=redis
+    ports:
+      - "8002:8000"
+    # Using npm install -g yarn to ensure availability, then build assets.
+    # Using npx concurrently to run both artisan serve and npm watch
+    command: sh -c "composer install && php artisan serve --host=0.0.0.0 --port=8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - tripay-network
+
   # Caddy Reverse Proxy for .localhost domains
   proxy:
     image: caddy:latest

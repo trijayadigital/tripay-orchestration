@@ -2,7 +2,7 @@
     admin off
 }
 
-http://dashboard.tripay.localhost, http://trihariyanto.localhost, http://tripay.localhost {
+http://dashboard.tripay.localhost, http://trihariyanto.localhost, http://tripay.localhost, http://tripay-ppob.localhost {
 
     @dashboard host dashboard.tripay.localhost
     handle @dashboard {
@@ -22,6 +22,16 @@ http://dashboard.tripay.localhost, http://trihariyanto.localhost, http://tripay.
     @tripay host tripay.localhost
     handle @tripay {
         reverse_proxy tripay-payment:8000 {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    @tripay-ppob host tripay-ppob.localhost
+    handle @tripay-ppob {
+        reverse_proxy tripay-ppob:8000 {
             header_up Host {host}
             header_up X-Real-IP {remote_host}
             header_up X-Forwarded-For {remote_host}
