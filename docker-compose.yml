@@ -118,6 +118,24 @@ services:
     networks:
       - tripay-network
 
+  admin:
+    image: node:20-alpine
+    container_name: admin-tripay
+    working_dir: /app
+    volumes:
+      - ./admin.tripay.co.id:/app
+    environment:
+      - HOST=0.0.0.0
+      - PORT=3000
+      - NODE_ENV=development
+      - NUXT_DEV_SERVER_HTTPS=false
+      - CI=true pnpm install
+    ports:
+      - "3001:3000"
+    command: sh -c "npm install -g pnpm && pnpm install && pnpm dev"
+    networks:
+      - tripay-network
+
 networks:
   tripay-network:
     driver: bridge
