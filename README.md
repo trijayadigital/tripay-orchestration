@@ -4,11 +4,12 @@ Project ini adalah **sistem terpusat** untuk mengelola dan mengoordinasikan bebe
 
 ## 📦 Aplikasi yang Tersedia
 
-Project ini menggabungkan 4 aplikasi dalam satu environment:
+Project ini menggabungkan 5 aplikasi dalam satu environment:
 
 | Aplikasi         | Teknologi | Repository                                                                         | Branch            |
 | ---------------- | --------- | ---------------------------------------------------------------------------------- | ----------------- |
 | Dashboard Tripay | Nuxt.js   | [dashboard.tripay.co.id](https://github.com/trijayadigital/dashboard.tripay.co.id) | `dev`             |
+| Admin Tripay     | Nuxt.js   | [admin.tripay.co.id](https://github.com/trijayadigital/admin.tripay.co.id)         | `main`            |
 | Trihariyanto     | Laravel   | [trihariyanto.com](https://github.com/trijayadigital/trihariyanto.com)             | `main`            |
 | Tripay Payment   | Laravel   | [tripay-payment](https://github.com/trijayadigital/tripay-payment)                 | `feature/new-sso` |
 | Tripay PPOB      | Laravel   | [tripay-ppob](https://github.com/trijayadigital/tripay-ppob)                       | `main`            |
@@ -32,6 +33,7 @@ git clone -b feature/new-sso https://github.com/trijayadigital/tripay-payment.gi
 git clone -b main https://github.com/trijayadigital/tripay-ppob.git
 git clone -b dev https://github.com/trijayadigital/dashboard.tripay.co.id.git
 git clone -b main https://github.com/trijayadigital/trihariyanto.com.git
+git clone -b main https://github.com/trijayadigital/admin.tripay.co.id.git
 ```
 
 ### Langkah 3: Setup Database
@@ -59,6 +61,7 @@ Setelah Docker berjalan, buka browser dan akses URL berikut:
 | Aplikasi         | URL Browser                         | Keterangan      |
 | ---------------- | ----------------------------------- | --------------- |
 | Dashboard Tripay | `http://dashboard.tripay.localhost` | Dashboard utama |
+| Admin Tripay     | `http://admin.tripay.localhost`     | Panel admin     |
 | Trihariyanto     | `http://trihariyanto.localhost`     | SSO & Auth      |
 | Tripay Payment   | `http://tripay.localhost`           | Payment gateway |
 | Tripay PPOB      | `http://tripay-ppob.localhost`      | PPOB service    |
@@ -138,6 +141,8 @@ Gunakan tabel ini saat menulis kode backend yang perlu komunikasi antar service:
 | `trihariyanto`   | 8000 | trihariyanto.com | `http://trihariyanto:8000/endpoint`   |
 | `tripay-payment` | 8000 | tripay-payment   | `http://tripay-payment:8000/endpoint` |
 | `tripay-ppob`    | 8000 | tripay-ppob      | `http://tripay-ppob:8000/endpoint`    |
+| `admin`          | 3000 | admin.tripay     | `http://admin:3000/endpoint`          |
+| `dashboard`      | 3000 | dashboard.tripay | `http://dashboard:3000/endpoint`      |
 
 ---
 
@@ -180,16 +185,20 @@ docker exec -it tripay-trihariyanto composer install
 ### Nama Container yang Tersedia:
 
 - `tripay-dashboard`
+- `admin-tripay`
 - `tripay-trihariyanto`
 - `tripay-payment`
 - `tripay-ppob`
+- `tripay-redis`
+- `tripay-proxy`
 
 ---
 
 ### 💡 Ringkasan Cepat
 
-| Skenario                 | URL yang Digunakan  | Contoh                           |
-| ------------------------ | ------------------- | -------------------------------- |
-| **Akses dari Browser**   | Domain `.localhost` | `http://tripay.localhost`        |
-| **Backend → Backend**    | Service name Docker | `http://tripay-payment:8000`     |
-| **Login Tripay Payment** | `/member` path      | `http://tripay.localhost/member` |
+| Skenario                 | URL yang Digunakan  | Contoh                              |
+| ------------------------ | ------------------- | ----------------------------------- |
+| **Akses dari Browser**   | Domain `.localhost` | `http://tripay.localhost`           |
+| **Akses Admin**          | Domain `.localhost` | `http://admin.tripay.localhost`     |
+| **Backend → Backend**    | Service name Docker | `http://tripay-payment:8000`        |
+| **Login Tripay Payment** | `/member` path      | `http://tripay.localhost/member`    |

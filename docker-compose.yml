@@ -54,11 +54,11 @@ services:
     networks:
       - tripay-network
 
-  # tripay-payment (PHP 8.2 + Laravel + Vue)
+  # tripay-payment (PHP 8.3 + Laravel + Vue)
   tripay-payment:
     build:
       context: .
-      dockerfile: .docker/php81/Dockerfile
+      dockerfile: .docker/php83/Dockerfile
     container_name: tripay-payment
     working_dir: /var/www/html
     volumes:
